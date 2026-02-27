@@ -373,12 +373,82 @@ els.btnRestart.addEventListener('click', () => {
   }, 650);
 });
 
-// ─── Metallic Shader: CTA button ──────────────────────────────────────────────
-// Shift the gradient angle with cursor X within the button.
+// ─── Border: WebGL metallic shader ────────────────────────────────────────────
+// Blinn-Phong specular on a flat gold surface; cursor = light source position.
+// Canvas is masked to the knot border shape via CSS mask-border.
+(function initBorderShader() {
+  const canvas = document.getElementById('border-frame');
+  const gl = canvas.getContext('webgl', { alpha: false, antialias: false });
+  if (!gl) return;
+
+  const VS = `attribute vec2 p; void main(){gl_Position=vec4(p,0,1);}`;
+  const FS = `
+    precision highp float;
+    uniform vec2 u_res;
+    uniform vec2 u_mouse;
+    void main() {
+      vec2 uv = vec2(gl_FragCoord.x, u_res.y - gl_FragCoord.y) / u_res;
+      vec3 N = vec3(0.0, 0.0, 1.0);
+      vec3 V = vec3(0.0, 0.0, 1.0);
+      // Light from cursor, mapped to a hemisphere above the surface
+      vec3 L = normalize(vec3((u_mouse.x - 0.5) * 3.0,
+                              (u_mouse.y - 0.5) * -3.0, 2.0));
+      vec3 H    = normalize(L + V);
+      float diff = 0.30 + 0.70 * max(dot(N, L), 0.0);
+      float spec = pow(max(dot(N, H), 0.0), 55.0);
+      vec3 dark   = vec3(0.50, 0.33, 0.04);
+      vec3 base   = vec3(0.82, 0.62, 0.12);
+      vec3 bright = vec3(1.00, 0.88, 0.50);
+      vec3 col = mix(dark, base, diff);
+      col = mix(col, bright, spec * 0.7);
+      col += bright * spec * 0.5;
+      gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
+    }`;
+
+  function shader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s); return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER,   VS));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER,
+    new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes   = gl.getUniformLocation(prog, 'u_res');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+  let mx = 0.5, my = 0.5;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX / window.innerWidth;
+    my = e.clientY / window.innerHeight;
+  });
+
+  (function render() {
+    const w = canvas.offsetWidth  | 0;
+    const h = canvas.offsetHeight | 0;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform2f(uMouse, mx, my);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  })();
+})();
+
+// ─── Button: metallic gradient angle shift ────────────────────────────────────
 const ctaBtn = document.getElementById('btn-approach');
 ctaBtn?.addEventListener('mousemove', (e) => {
   const r = ctaBtn.getBoundingClientRect();
-  const nx = (e.clientX - r.left) / r.width - 0.5; // -0.5 → +0.5
+  const nx = (e.clientX - r.left) / r.width - 0.5;
   ctaBtn.style.setProperty('--btn-angle', (125 + nx * 70).toFixed(1) + 'deg');
 });
 ctaBtn?.addEventListener('mouseleave', () => {
