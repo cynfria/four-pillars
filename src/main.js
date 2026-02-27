@@ -471,6 +471,91 @@ ctaBtn?.addEventListener('mouseleave', () => {
   btnReturnAnim = requestAnimationFrame(ease);
 });
 
+// ─── Coin: WebGL metallic shader ──────────────────────────────────────────────
+// Renders the gold coin fill. Surface normal is (sin θ, 0, cos θ) for a flat
+// disc doing rotateY, so specular shifts naturally as the coin spins.
+// Canvas sits behind the SVG overlay (rings + 財 text). Both are inside
+// #coin-wrapper which carries the CSS coin-spin animation.
+(function initCoinShader() {
+  const canvas = document.getElementById('coin-canvas');
+  if (!canvas) return;
+  canvas.width = 240; canvas.height = 240; // 2× for crisp rendering
+
+  const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false });
+  if (!gl) return;
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  const VS = `attribute vec2 p; void main(){gl_Position=vec4(p,0,1);}`;
+  const FS = `
+    precision highp float;
+    uniform vec2  u_res;
+    uniform float u_angle;
+    void main() {
+      vec2  uv    = (2.0 * gl_FragCoord.xy - u_res) / min(u_res.x, u_res.y);
+      float d     = length(uv);
+      float alpha = 1.0 - smoothstep(0.87, 0.93, d);
+      if (alpha < 0.01) { gl_FragColor = vec4(0.0); return; }
+
+      // Flat disc rotating around Y: normal tilts with the spin angle
+      vec3 N = normalize(vec3(sin(u_angle), 0.0, cos(u_angle)));
+      vec3 L = normalize(vec3(0.5, 0.7, 1.0));
+      vec3 V = vec3(0.0, 0.0, 1.0);
+      vec3 H = normalize(L + V);
+
+      float diff  = max(dot(N, L), 0.0);
+      float spec  = pow(max(dot(N, H), 0.0), 62.0);
+      float bevel = smoothstep(0.93, 0.72, d); // edge darkening
+
+      vec3 dark   = vec3(0.38, 0.24, 0.02);
+      vec3 base   = vec3(0.82, 0.62, 0.11);
+      vec3 bright = vec3(1.00, 0.90, 0.52);
+
+      vec3 col  = mix(dark, base, diff * 0.9);
+      col       = mix(col, bright, spec * 0.9);
+      col      += bright * spec * 0.4;
+      col      *= bevel;
+
+      // Narrow rim highlight at coin edge
+      float rim  = 1.0 - smoothstep(0.025, 0.0, abs(d - 0.84));
+      col       += bright * rim * 0.45 * (0.3 + 0.7 * spec);
+
+      gl_FragColor = vec4(clamp(col, 0.0, 1.0), alpha * bevel);
+    }`;
+
+  function mkShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s); return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, mkShader(gl.VERTEX_SHADER, VS));
+  gl.attachShader(prog, mkShader(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog); gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes   = gl.getUniformLocation(prog, 'u_res');
+  const uAngle = gl.getUniformLocation(prog, 'u_angle');
+
+  let start = null;
+  (function render(t) {
+    if (!start) start = t;
+    const angle = ((t - start) % 4000) / 4000 * Math.PI * 2;
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uAngle, angle);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  })();
+})();
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 createIcons({ icons: { Send, RotateCcw, ArrowRight } });
 

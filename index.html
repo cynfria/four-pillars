@@ -104,12 +104,17 @@
     <div class="screen" id="screen-oracle">
       <div class="oracle-content">
         <div class="coins-animation">
-          <svg viewBox="0 0 120 120" class="coin-svg" id="coin-svg">
-            <circle cx="60" cy="60" r="50" fill="none" stroke="#D4A017" stroke-width="3" />
-            <circle cx="60" cy="60" r="40" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.6"/>
-            <rect x="50" y="50" width="20" height="20" fill="none" stroke="#D4A017" stroke-width="2" />
-            <text x="60" y="65" text-anchor="middle" fill="#FFD700" font-size="16" font-family="Noto Serif SC">財</text>
-          </svg>
+          <div id="coin-wrapper">
+            <!-- WebGL metallic shader fills the coin body -->
+            <canvas id="coin-canvas"></canvas>
+            <!-- SVG decorative details sit on top -->
+            <svg viewBox="0 0 120 120" id="coin-svg">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#D4A017" stroke-width="2.5" opacity="0.7"/>
+              <circle cx="60" cy="60" r="40" fill="none" stroke="#FFD700" stroke-width="1.5" opacity="0.5"/>
+              <rect x="50" y="50" width="20" height="20" fill="none" stroke="#D4A017" stroke-width="1.5" opacity="0.7"/>
+              <text x="60" y="65" text-anchor="middle" fill="rgba(255,230,120,0.9)" font-size="16" font-family="Noto Serif SC">財</text>
+            </svg>
+          </div>
         </div>
         <p class="oracle-phrase" id="oracle-phrase" style="display:none"></p>
       </div>

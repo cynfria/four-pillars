@@ -468,10 +468,19 @@ input[type="date"].empty {
   position: relative;
 }
 
-.coin-svg {
+#coin-wrapper {
+  position: relative;
   width: 120px;
   height: 120px;
   animation: coin-spin 4s linear infinite;
+}
+
+#coin-canvas,
+#coin-svg {
+  position: absolute;
+  top: 0; left: 0;
+  width: 120px;
+  height: 120px;
 }
 
 @keyframes coin-spin {
