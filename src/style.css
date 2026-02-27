@@ -29,6 +29,7 @@
    CSS Custom Properties
    ═══════════════════════════════════════════ */
 :root {
+  color-scheme: light;
   --red: #C0272D;
   --bright-red: #E03030;
   --gold: #D4A017;
@@ -108,7 +109,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 0.75rem;
   width: 100%;
   height: 100%;
 }
@@ -130,7 +131,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.75rem;
+  gap: 0.75rem;
   width: 100%;
   max-width: 420px;
   padding: 0 1.5rem;
@@ -139,7 +140,7 @@ body {
 /* Title */
 .title-main {
   font-family: var(--font-title);
-  font-size: clamp(2.6rem, 5vw, 4rem);
+  font-size: clamp(2rem, 3.8vw, 3rem);
   font-weight: 700;
   color: #FFDA6C;
   text-align: center;
@@ -153,7 +154,7 @@ body {
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 label {
@@ -507,6 +508,7 @@ input[type="date"].empty {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  margin-left: -6px;
 }
 
 .slide-dot {
@@ -543,19 +545,19 @@ input[type="date"].empty {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 5rem;
+  padding: 6.5rem 6.5rem 6.5rem 4rem;
 }
 
 /* ── Slide 0: Hero ── */
 .slide-hero {
   gap: 2rem;
   justify-content: flex-start;
-  padding-top: 4rem;
+  padding-top: 6.5rem;
 }
 
 .slide-hero-title {
   font-family: var(--font-title);
-  font-size: clamp(3rem, 7vw, 5rem);
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
   font-weight: 700;
   color: #FFDA6C;
   text-align: center;
@@ -602,10 +604,7 @@ input[type="date"].empty {
 }
 
 .pillar-stem {
-  font-family: var(--font-zh);
-  font-size: 0.9rem;
-  color: rgba(255,218,108,0.4);
-  line-height: 1;
+  display: none;
 }
 
 .pillar-branch {
@@ -657,7 +656,7 @@ input[type="date"].empty {
 /* ── Slide 1 & 3: Centered layout (title pinned top, image+text grouped) ── */
 .slide-centered {
   justify-content: flex-start;
-  padding: 3rem 6rem 2rem;
+  padding: 6.5rem 6.5rem 3rem 4rem;
   gap: 0;
 }
 
@@ -673,7 +672,7 @@ input[type="date"].empty {
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
-  transform: translateY(-40px);
+  transform: translateY(-20px);
 }
 
 .slide-object {
@@ -719,7 +718,7 @@ input[type="date"].empty {
 /* ── Slides 4-6: Two-column layout ── */
 .slide-two-col {
   justify-content: flex-start;
-  padding: 3.5rem 5rem;
+  padding: 6.5rem 6.5rem 6.5rem 4rem;
   gap: 3rem;
 }
 
@@ -745,22 +744,34 @@ input[type="date"].empty {
 /* ── Slide 7: Compatibility ── */
 .slide-compat {
   justify-content: flex-start;
-  padding: 3rem 5rem;
-  gap: 1.25rem;
+  padding: 6.5rem 6.5rem 6.5rem 4rem;
+  gap: 2rem;
   align-items: center;
 }
 
 .slide-compat-img {
-  width: clamp(180px, 26vw, 280px);
+  width: clamp(240px, 34vw, 380px);
   object-fit: contain;
-  margin-top: 32px;
+  flex-shrink: 0;
+}
+
+.compat-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  flex: 1;
 }
 
 .compat-group {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.6rem;
+}
+
+.compat-tags {
+  justify-content: flex-start;
 }
 
 .compat-label {
@@ -816,7 +827,7 @@ input[type="date"].empty {
 /* ── Down arrow hint ── */
 .slide-down-btn {
   position: absolute;
-  bottom: 2rem;
+  bottom: calc(6rem - 16px);
   left: calc(44px + (100% - 44px) / 2);
   transform: translateX(-50%);
   width: 44px;
@@ -842,7 +853,7 @@ input[type="date"].empty {
 
 @keyframes slide-bounce {
   0%, 100% { transform: translateX(-50%) translateY(0); }
-  50%       { transform: translateX(-50%) translateY(8px); }
+  50%       { transform: translateX(-50%) translateY(6px); }
 }
 
 /* Icon sizing */
@@ -860,7 +871,21 @@ input[type="date"].empty {
   display: none;
 }
 
+#border-frame {
+  position: fixed;
+  inset: 32px;
+  pointer-events: none;
+  z-index: 9999;
+  border-style: solid;
+  border-image-source: url('/assets/knot-border.svg');
+  border-image-slice: 40;
+  border-image-width: 46px 44px;
+  border-image-repeat: stretch;
+}
+
 @media (max-width: 768px) {
+  #border-frame { display: none; }
+
   .small-screen-msg {
     display: flex;
     position: fixed;
