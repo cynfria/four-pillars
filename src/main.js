@@ -373,6 +373,18 @@ els.btnRestart.addEventListener('click', () => {
   }, 650);
 });
 
+// ─── Border Hover ─────────────────────────────────────────────────────────────
+const borderFrame = document.getElementById('border-frame');
+const BORDER_ZONE = 90; // px from viewport edge triggers hover state
+
+document.addEventListener('mousemove', (e) => {
+  const near = e.clientX < BORDER_ZONE
+    || e.clientX > window.innerWidth  - BORDER_ZONE
+    || e.clientY < BORDER_ZONE
+    || e.clientY > window.innerHeight - BORDER_ZONE;
+  borderFrame?.classList.toggle('border-hover', near);
+});
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 createIcons({ icons: { Send, RotateCcw, ArrowRight } });
 
