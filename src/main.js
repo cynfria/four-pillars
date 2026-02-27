@@ -373,9 +373,9 @@ els.btnRestart.addEventListener('click', () => {
   }, 650);
 });
 
-// ─── Border Metallic Shader ────────────────────────────────────────────────────
-// Track cursor and move the specular highlight in SVG coordinate space.
-// SVG viewBox is 0 0 1227 739; the element is inset 32px on each side.
+// ─── Metallic Shader: border + CTA button ─────────────────────────────────────
+// Border: move specular highlight in SVG coordinate space (viewBox 0 0 1227 739,
+//         rendered inset 32px on each side).
 const cursorLight = document.getElementById('cursorLight');
 
 document.addEventListener('mousemove', (e) => {
@@ -384,6 +384,17 @@ document.addEventListener('mousemove', (e) => {
   const svgY = (e.clientY - 32) / (window.innerHeight - 64) * 739;
   cursorLight.setAttribute('cx', svgX.toFixed(1));
   cursorLight.setAttribute('cy', svgY.toFixed(1));
+});
+
+// Button: move radial gradient highlight to cursor position within the element.
+const ctaBtn = document.getElementById('btn-approach');
+ctaBtn?.addEventListener('mousemove', (e) => {
+  const r = ctaBtn.getBoundingClientRect();
+  ctaBtn.style.setProperty('--bx', ((e.clientX - r.left) / r.width  * 100).toFixed(1) + '%');
+  ctaBtn.style.setProperty('--by', ((e.clientY - r.top)  / r.height * 100).toFixed(1) + '%');
+});
+ctaBtn?.addEventListener('mouseleave', () => {
+  ctaBtn.style.setProperty('--bx', '150%'); // push highlight off-screen at rest
 });
 
 // ─── Init ─────────────────────────────────────────────────────────────────────

@@ -300,7 +300,23 @@ input[type="date"].empty {
   width: 100%;
   margin-top: 0.75rem;
   padding: 0.9rem 1.5rem;
-  background: var(--bright-gold);
+  background:
+    radial-gradient(circle at var(--bx, 150%) var(--by, 50%),
+      rgba(255,252,232,0.92) 0%,
+      rgba(255,228,110,0.52) 22%,
+      transparent 52%
+    ),
+    linear-gradient(135deg,
+      #4A2D00 0%,
+      #8B5A0A 14%,
+      #C8920F 27%,
+      #FFD060 40%,
+      #FFDA6C 50%,
+      #C8920F 60%,
+      #FFE47A 73%,
+      #8B5A0A 86%,
+      #4A2D00 100%
+    );
   border: none;
   border-radius: 12px;
   color: #7A1A00;
@@ -309,11 +325,10 @@ input[type="date"].empty {
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: transform 0.1s;
 }
 
 .cta-btn:hover {
-  background: #F9D050;
   transform: translateY(-1px);
 }
 
@@ -874,6 +889,8 @@ input[type="date"].empty {
 #border-frame {
   position: fixed;
   inset: 32px;
+  width: calc(100vw - 64px);
+  height: calc(100vh - 64px);
   pointer-events: none;
   z-index: 9999;
 }
