@@ -451,13 +451,24 @@ els.btnRestart.addEventListener('click', () => {
 
 // ─── Button: metallic gradient angle shift ────────────────────────────────────
 const ctaBtn = document.getElementById('btn-approach');
+let btnAngle = 125;
+let btnReturnAnim = null;
+
 ctaBtn?.addEventListener('mousemove', (e) => {
+  cancelAnimationFrame(btnReturnAnim);
   const r = ctaBtn.getBoundingClientRect();
-  const nx = (e.clientX - r.left) / r.width - 0.5;
-  ctaBtn.style.setProperty('--btn-angle', (125 + nx * 70).toFixed(1) + 'deg');
+  btnAngle = 125 + ((e.clientX - r.left) / r.width - 0.5) * 70;
+  ctaBtn.style.setProperty('--btn-angle', btnAngle.toFixed(1) + 'deg');
 });
+
 ctaBtn?.addEventListener('mouseleave', () => {
-  ctaBtn.style.setProperty('--btn-angle', '125deg');
+  function ease() {
+    btnAngle += (125 - btnAngle) * 0.1;
+    ctaBtn.style.setProperty('--btn-angle', btnAngle.toFixed(1) + 'deg');
+    if (Math.abs(btnAngle - 125) > 0.2) btnReturnAnim = requestAnimationFrame(ease);
+    else ctaBtn.style.setProperty('--btn-angle', '125deg');
+  }
+  btnReturnAnim = requestAnimationFrame(ease);
 });
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
