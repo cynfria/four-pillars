@@ -102,6 +102,10 @@ els.tobMinute.addEventListener('input', () => {
   if (els.tobMinute.value.length > 2) els.tobMinute.value = els.tobMinute.value.slice(0, 2);
 });
 
+els.tobMinute.addEventListener('keydown', (e) => {
+  if (e.key === 'Backspace' && els.tobMinute.value === '') els.tobHour.focus();
+});
+
 els.tobMinute.addEventListener('blur', () => {
   const m = parseInt(els.tobMinute.value);
   if (!isNaN(m)) els.tobMinute.value = String(Math.min(59, Math.max(0, m))).padStart(2, '0');

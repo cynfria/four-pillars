@@ -838,8 +838,8 @@ input[type="date"].empty {
 /* ── Down arrow hint ── */
 .slide-down-btn {
   position: absolute;
-  bottom: calc(6rem - 16px);
-  left: calc(44px + (100% - 44px) / 2);
+  bottom: calc(6rem - 32px);
+  left: 50%;
   transform: translateX(-50%);
   width: 44px;
   height: 44px;
