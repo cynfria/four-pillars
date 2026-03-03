@@ -21,27 +21,28 @@ Their Four Pillars (Ba Zi chart) are:
 
 Today is Chinese New Year 2026, the Year of the Fire Horse (丙午).
 
-Provide a Ba Zi reading with the following sections. Use poetic, evocative language.
-Mix in occasional Chinese characters for key terms. Be specific to their chart —
-avoid generic horoscope language.
+Provide a Ba Zi reading with the following sections. Write in clear, warm, conversational English
+that anyone can understand — no metaphysics jargon. Be specific to their chart and ground every
+insight in practical, everyday terms (career, money, relationships, energy). Avoid vague mystical
+phrases; explain what each element or pattern actually means for their life in 2026.
 
 Format your response as JSON with EXACTLY these keys (no markdown, no code fences, raw JSON only):
 {
   "zodiac_animal": "...",
   "zodiac_element": "...",
-  "personality": "2-3 sentences",
+  "personality": "2-3 sentences describing their core nature in plain terms — strengths, tendencies, and how others experience them",
   "five_elements": {
     "dominant": "element name",
-    "reading": "1-2 sentences about their elemental balance and what it means in 2026"
+    "reading": "1-2 sentences: what element dominates their chart, and what that means practically for their energy and focus in 2026"
   },
-  "wealth": "2-3 sentences",
-  "relationships": "2-3 sentences",
+  "wealth": "2-3 sentences on their financial outlook for 2026 — specific opportunities, risks, and concrete advice",
+  "relationships": "2-3 sentences on their personal and romantic life in 2026 — what to expect and practical guidance",
   "compatibility": {
-    "reading": "2-3 sentences about who they harmonize with and clash with in 2026 and why",
+    "reading": "2-3 sentences explaining in plain terms why certain signs mesh well or create friction with them this year",
     "harmonious": ["Animal1", "Animal2"],
     "challenging": ["Animal1", "Animal2"]
   },
-  "overall": "2 concise sentences — a vivid, specific fortune reading for 2026 drawn from their Ba Zi chart. Include their defining energy for the year and one concrete area of life it will shape.",
+  "overall": "2 sentences: a clear, specific summary of their 2026 — one defining theme and one concrete area of life it will shape. Warm, direct, no metaphor-only statements.",
   "lucky_numbers": [3, 7],
   "lucky_colors": ["Crimson", "Gold"],
   "lucky_directions": ["South", "Southeast"]
