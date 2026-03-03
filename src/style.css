@@ -62,6 +62,7 @@ html, body {
   overflow: hidden;
   font-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  background: #7E0909;
 }
 
 body {

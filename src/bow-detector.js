@@ -18,17 +18,21 @@ const CALIB_FRAMES  = 20;    // ~0.7 s at 30 fps
 
 const STATES = { CALIBRATING: 'CALIBRATING', UPRIGHT: 'UPRIGHT', BOWING: 'BOWING', RETURNING: 'RETURNING' };
 
+const TOO_CLOSE_THRESHOLD = 0.45; // shoulder width > 45% of frame = too close
+
 export class BowDetector {
-  constructor({ onBow, onStateChange, onCalibrated }) {
+  constructor({ onBow, onStateChange, onCalibrated, onTooClose }) {
     this.onBow         = onBow;
     this.onStateChange = onStateChange;
-    this.onCalibrated  = onCalibrated;   // called once calibration is done
+    this.onCalibrated  = onCalibrated;
+    this.onTooClose    = onTooClose;
 
     this.state         = STATES.CALIBRATING;
     this.lastBowTime   = 0;
     this.bowCount      = 0;
     this.neutralNoseY  = null;
     this.calibSamples  = [];
+    this.tooClose      = false;
 
     this.stream        = null;
     this.animFrame     = null;
@@ -100,6 +104,16 @@ export class BowDetector {
   _process(lm) {
     const nose = lm[0];
     if (!nose) return;
+
+    // Distance check via shoulder width
+    const ls = lm[11], rs = lm[12];
+    if (ls && rs) {
+      const nowTooClose = Math.abs(ls.x - rs.x) > TOO_CLOSE_THRESHOLD;
+      if (nowTooClose !== this.tooClose) {
+        this.tooClose = nowTooClose;
+        this.onTooClose?.(nowTooClose);
+      }
+    }
 
     const noseY = nose.y;
 

@@ -3,7 +3,16 @@
  * Keeps the Anthropic API key server-side.
  */
 
+const MAX_PROMPT_CHARS = 4000; // well above any legitimate reading prompt
+
 export async function onRequestPost(context) {
+  // Reject requests not originating from the site itself
+  const origin = context.request.headers.get('origin') ?? '';
+  const host   = context.request.headers.get('host') ?? '';
+  if (origin && !origin.includes(host.replace(/:\d+$/, ''))) {
+    return new Response('Forbidden', { status: 403 });
+  }
+
   let body;
   try {
     body = await context.request.json();
@@ -12,7 +21,12 @@ export async function onRequestPost(context) {
   }
 
   const { prompt } = body;
-  if (!prompt) return new Response('Missing prompt', { status: 400 });
+  if (!prompt || typeof prompt !== 'string') {
+    return new Response('Missing prompt', { status: 400 });
+  }
+  if (prompt.length > MAX_PROMPT_CHARS) {
+    return new Response('Prompt too long', { status: 413 });
+  }
 
   const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',

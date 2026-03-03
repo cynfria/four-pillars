@@ -26,6 +26,7 @@ const state = {
   tob:     null,
   bazi:    null,
   fortune: null,
+  fortunePromise: null,
 };
 
 // ─── Oracle Phrases ───────────────────────────────────────────────────────────
@@ -113,7 +114,7 @@ els.tobMinute.addEventListener('input', () => {
 });
 
 els.tobMinute.addEventListener('keydown', (e) => {
-  if (e.key === 'Backspace' && els.tobMinute.value === '') els.tobHour.focus();
+  if ((e.key === 'Backspace' && els.tobMinute.value === '') || e.key === 'ArrowLeft') els.tobHour.focus();
 });
 
 els.tobMinute.addEventListener('blur', () => {
@@ -158,6 +159,7 @@ els.btnApproach.addEventListener('click', () => {
   state.dob  = dob;
   state.tob  = getTobValue();
   state.bazi = calculateBaZi(dob, state.tob);
+  state.fortunePromise = getFortune(state.dob, state.tob, state.bazi, null);
   showScreen('bow');
   initBowScreen();
 });
@@ -181,8 +183,18 @@ function initBowScreen() {
       }
     },
     onCalibrated: () => {
-      els.manualHint.textContent = 'Ready — bow slowly and deeply three times.';
-      setTimeout(() => { els.manualHint.textContent = ''; }, 3000);
+      if (!bowDetector.tooClose) {
+        els.manualHint.textContent = 'Ready — bow slowly and deeply three times.';
+      }
+    },
+    onTooClose: (isTooClose) => {
+      if (isTooClose) {
+        els.manualHint.textContent = 'Step back a little.';
+      } else {
+        els.manualHint.textContent = bowDetector.state === 'CALIBRATING'
+          ? 'Calibrating… hold still for a moment.'
+          : 'Ready — bow slowly and deeply three times.';
+      }
     },
   });
 
@@ -244,7 +256,7 @@ function startOracleAndFetch() {
     }, 500);
   }, 2500);
 
-  getFortune(state.dob, state.tob, state.bazi, null)
+  (state.fortunePromise || getFortune(state.dob, state.tob, state.bazi, null))
     .then(fortune => {
       state.fortune = fortune;
       localStorage.setItem('threebows_last', JSON.stringify(state));
@@ -375,6 +387,7 @@ els.btnRestart.addEventListener('click', () => {
   state.tob = null;
   state.bazi = null;
   state.fortune = null;
+  state.fortunePromise = null;
   els.dob.value = '';
   els.tobHour.value = '';
   els.tobMinute.value = '';
@@ -474,7 +487,8 @@ els.btnRestart.addEventListener('click', () => {
       window.addEventListener('deviceorientation', applyOrientation);
     }
   }
-  document.addEventListener('touchstart', enableOrientation, { once: true });
+  // iOS 13+ requires requestPermission inside a click handler; fires on first tap
+  document.addEventListener('click', enableOrientation, { once: true });
 
   (function render() {
     const w = canvas.offsetWidth  | 0;
